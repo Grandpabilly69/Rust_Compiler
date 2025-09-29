@@ -1,0 +1,56 @@
+Introduction
+
+A compiler is just a Language Translator
+
+4 phases:
+
+Pre-processor:
+removes comments
+removes the imports 
+this makes only the actual code needed stored
+
+Compiler:
+converts High level language code into assembly 
+
+Assembler:
+generates relocatable machine code
+relocatable means that it doesn't need to be stored in a specific space in ram
+
+Linker/Loader:
+generates the absolute machine code
+
+
+compiler has 6 different phases:
+
+first 3 phases are the analysis phase
+the last 3 are considered Synthesis phase
+
+first 4 phases are front end
+last 2 are back end
+
+There are 2 other components with this
+Symbol Table Manager
+Error Handler
+
+
+1.Lexical Analysis:
+
+
+2.Syntax Analysis:
+
+
+3.Semantic Analysis:
+
+
+4.Intermediate Code Generation:
+
+
+5.Code Optimization:
+
+
+6.Target Code Generation:
+
+
+
+
+

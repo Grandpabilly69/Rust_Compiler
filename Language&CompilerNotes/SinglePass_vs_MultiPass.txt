@@ -1,0 +1,56 @@
+*********************************************
+*Single-Pass Compiler vs Multi-Pass Compiler*
+*********************************************
+
+ -----------------------
+|What is a Compiler Pass|
+ -----------------------
+A compiler pass refers to the traversal of a compiler through the entire program. Compiler passes are of 2 types Single Pass Compiler, and Multi-Pass.
+
+ -----------
+|Single Pass|
+ -----------
+
+This is combining all the steps of a compiler (this in the introduction & Different Phases) into a single module.
+
+1. A Single pass compiler is a type of compiler that passes through the part of each compilation unit exactly once.
+2. Single pass compiler is faster and smaller than the multi-pass compiler.
+3. A disadvantage of a single pass compiler is that it is less efficient in comparison with the multi-pass compiler.
+4. A single pass compiler is one that processes the input exactly once, so going directly from Lexical analysis to code generator, and then going back for the next read is easier.
+
+ -------------------------
+|Problems with Single Pass|
+ -------------------------
+
+1. We can't optimize very well due to the context of expressions are limited.
+2. As we can't back up and process it again, so grammar should be limited or simplified.
+3. Command interpreters such as bash can be considered Single pass compilers, but they also execute entries as soon as they are processed.
+
+ -------------------
+|Multi-Pass Compiler|
+ -------------------
+
+A multi-pass compiler is a type of compiler that processes the source code or abstract syntax tree of program multiple times. In multi-pass Compilers, we divide the phases into Front-End and Back-End.
+
+ ---------------------------------
+|Problems with Multi-Pass Compiler|
+ ---------------------------------
+
+1. If we want to design a compiler for a different programming languages for the same machine. In this case for each programming language, there is a requirement to make the front end pass for each of them and only 1 Back end pass.
+
+2. If we want to design a compiler for the same programming language for different machines/systems. In this case, we make different Back end for different Machine/system and make only one Front end for the same programming language.
+
+
+ -------------------------------------------
+|Differences between One Pass and Multi Pass|
+ -------------------------------------------
+ --------			 	 ----------
+|One Pass|				|Multi Pass|
+ --------			 	 ----------
+
+Performs translation in 1 pass	| Performs translation in 2 pass
+It scans the entire file once	| Requires 2 passes to scan source file
+Generates Intermediate code	| Does not generate intermediate code
+Faster than 2 pass assembler	| Slower than 2 pass assembler
+Loader is not required		| Loader is required
+No object program is written	| Loader is required as object code is generated

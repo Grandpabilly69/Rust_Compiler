@@ -1,0 +1,15 @@
+Syllabus:
+
+Introduction //Completed video 
+
+syntax analyser
+
+parsers- Top Down
+
+Parsers - Bottom Up
+
+Syntax Directed Translation Schemes
+
+Intermediate Code Generation
+
+Runtime Environment & Code Optimization

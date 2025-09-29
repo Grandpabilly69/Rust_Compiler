@@ -1,0 +1,151 @@
+Different Phases of Compiler
+
+
+We will go through the steps of converting the expression {x = a + b * c} to assembly through the compiler
+
+
+Lexical Analyzer:
+
+Lexemes and tokens are created in a table
+
+a lexeme is basically the term used for example in the expression 
+
+	x, =, a, +, etc. are all lexemes
+
+a token is what the lexeme falls under basically
+
+	identifier or operator 
+
+Lexemes		Tokens
+___________________________
+x		identifier
+=		operator
+a		identifier
++		operator
+b		identifier
+*		operator
+c		identifier
+
+
+
+Recognises tokens using Regex stuff
+
+Regex for identifier:
+l(l+d)*|_(l+d)*
+
+where 
+l: letter
+d: digit
+_: underscore
+
+
+
+
+Syntax Analyser:
+
+It has production rules like:
+
+S --> id = E;
+E --> E + T|T
+T --> T * F|F
+f --> id
+
+this are different ways of righting certain things they all have different meanings like
+T is term
+F is factor
+id is identifier
+and so on
+
+basically all the above can be created by id
+
+Note the Parse tree is in diary at January 1st 2025
+
+the parse tree shows that:
+
+id = id + id * id;
+
+this is due to the fact that we read Top to Bottom, Left to Right
+
+
+Since the yield of the parse tree is the same as our starting value it means that there is no error.
+If it did not match then it would mean that there is a syntax error in the code.
+
+
+
+Semantic Analyzer:
+
+Does logical analysis of the parse tree
+it checks many things I will not list them all
+but it checks
+
+misuse of reserved words, constants/variables, etc.
+
+Looks for meaningfulness of parse tree 
+
+
+
+
+Intermediate Code Generator:
+
+we will use three address code (TAC)
+
+it starts from bottom and goes up the parse tree
+
+its called this because never has more than 3 addresses
+
+1.	t₀ = b * c;
+2.	t₁ = a + t₀;
+3.	x = t₁;
+
+TAC is considered the intermediate code
+
+
+
+
+
+Code Optimizer:
+
+takes intermediate code and generates optimized code
+
+optimized code will be the result of minimizing the amount of statements or addresses
+
+1.	t₀ = b * c;
+2.	x = a + t₀;
+
+
+
+Target Code generator:
+
+takes optimized code and converts it to assembly
+
+
+
+mov	eax, DWORD PTR [rbp-8]
+imul	eax, DWORD PTR [rbp-12]
+mov	edx, eax
+mov	eax, DWORD PTR [rbp-4]
+add	eax, edx
+mov	DWORD PTR [rbp-16], eax
+
+
+mov:	moving
+eax:	stores 32 bits
+DWORD PTR:	pointer that points to the identifier reading left to right after the equals
+imul:	sign multiplication
+edx:	32 bit register
+add:	adds contents of register of the edx to eax
+
+finally the last line moves what is in the registery to the variable which is x in this case
+
+
+
+
+Tools for practical implementation:
+
+Lexical Analysis:
+LEX
+
+Syntax Analysis:
+YACC (Yet Another Compiler Compiler)
+
+

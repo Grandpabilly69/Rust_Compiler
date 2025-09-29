@@ -1,0 +1,103 @@
+ |********************************|
+ |Brief summary of Compiler Design|
+  ********************************
+
+A compiler translates high-level language code into low level language like Assembly.
+When converting it will also pick up any compilation errors that may be present.
+
+Compilers preform multiple tasks that are broken up into:
+Lexical analysis,
+Syntax analysis,
+Semantic analysis,
+code generation,
+optimisation.
+
+
+The compiler is just 1 step from transferring High level languages into Absolute machine code.
+1.Pre-Processor,
+2.Compiler,
+3.Assembler,
+4.Loader/Linker
+___________________________________________________________________________________________
+
+ ---------------------------
+|Compiler Construction Tools|
+ ---------------------------
+1.Parser Generators: Creates syntax parsers based on grammatical descriptions of the language
+
+2.Scanner Generators: Produces lexical analysers using regular expressions to define tokens
+
+3.Syntax-Directed Translation Engines: Generates intermediate code in a 3-adress format to create the parse tree
+
+4.Automatic Code Generators: Converts intermediate language into machine language using template matching techniques
+
+5.Data-Flow Analysis Engines: Supports code optimization by analysing the flow of values through different parts of the program
+
+6.Compiler Construction ToolKits: Provides integrated routines to facilitate the construction of various compiler components 
+___________________________________________________________________________________________
+
+
+				{Please do more research on the Types}
+ ------------------		{More documents on each type soon}
+|Types of Compilers|
+ ------------------
+
+1.Self Compiler: When the compiler runs on the same machine and produces code for the same machine on which it is running then it is called as self compiler or resident compiler.
+
+2.Cross Compiler: The compiler may run on one machine and produce the machine code for other computers then in that case it is called a cross compiler. It is capable of creating code for a platform other than one on which the compiler is running.
+
+3.Source-to-Source Compiler: A StS compiler or transcompiler or transpiler is a compiler that translates source code written in one programming language into source code of another programming language.
+
+4.Single Pass Compiler: When all the phases of the compiler are present inside a single module, it is simply called a single-pass compiler. It preforms the work of converting source code to machine code.
+
+5.Two Pass Compiler: TP compiler is a compiler in which the program is translated twice, once from the front end and the back from the back end known as Two Pass Compiler.
+
+6.Multi-Pass Compiler: When several intermediate codes are created in a program and a syntax tree is processed many-times, it is called Multi-Pass Compiler. It breaks codes into smaller programs.
+
+7.Just-in-Time Compiler: JiT is a compiler that converts code into machine language during program execution, rather than before it runs. It combines the benefits of interpretation (real-time execution) and traditional compilation (faster execution).
+
+8.Ahead-of-Time Compiler: AoT converts the entire source code into machine code before the program runs. This means the code is fully compiled during development, resulting in faster start-up times and better performance at runtime.
+
+9.Incremental Compiler: This compiles only the parts of the code that have changed, rather than recompiling the entire program. This makes the compilation process faster and more efficient, especially during development.
+___________________________________________________________________________________________
+
+ ----------------
+|Basic operations|
+ ----------------
+
+1. It breaks source programs into smaller parts.
+2. It enables the creation of symbol tables and intermediate representations.
+3. It helps in code compilation and error detection.
+4. It saves all codes and variables.
+5. It analyses the full program and translates it.
+6. It converts source code to machine code.
+
+___________________________________________________________________________________________
+
+ ----------
+|Advantages|
+ ----------
+
+Efficiency: Compiled programs are generally more efficient than interpreted programs use the machine code produced by the compiler is optimized for the specific hardware platform on which it will run.
+
+Portability: Once a program is compiled, the resulting machine code can be run on any computer or device that has the appropriate hardware and operating system, making it highly portable.
+
+Error Checking: Compilers perform comprehensive error checking during the compilation process, which can help catch syntax, semantic, and logical errors in the code before it is run.
+
+Optimizations: Compilers can make various optimizations to the generated machine code, such as eliminating redundant instructions or rearranging code for better performance.
+
+___________________________________________________________________________________________
+
+ -------------
+|Disadvantages|
+ -------------
+
+Longer Development Time: Developing a compiler is a complex and time-consuming process that requires a deep understanding of both the programming language and the target hardware platform.
+
+Debugging Difficulties: Debugging compiled code can be more difficult than debugging interpreted code because the generated machine code may not be easy to read or understand.
+
+Lack of Interactivity: Compiled programs are typically less interactive than interpreted programs because they must be compiled before they can be run, which can slow down the development and testing process.
+
+Platform-Specific Code: If the compiler is designed to generate machine code for a specific hardware platform, the resulting code may not be portable to other platforms.
+
+

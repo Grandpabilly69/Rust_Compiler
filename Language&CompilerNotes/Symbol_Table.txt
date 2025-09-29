@@ -1,0 +1,60 @@
+**************
+|Symbol Table|
+**************
+
+ --------------------
+|Symbol Table Manager|
+ --------------------
+
+A data structure used for compilers to store information such as:
+
+	Variables
+	Objects
+	Classes
+	Interfaces
+
+Information inside of symbol table is gathered from the analysis phase. And then is used by the synthesis phase to generate the target code.
+	 -----------------------------
+	|How It is used for each phase|
+	 -----------------------------
+		Lexical: Creates entries for identities
+		Syntax: Adds information regarding attributes
+		Semantic: Using available info checks Semantics & updates the Symbol Table
+		ICG: Available info helps in adding Temporary variables' information
+		Optimization: Available info is used in Machine dependent optimization
+		TCG: Generates the Target code using address info of identifiers
+
+	 ----------------------
+	|How entries are stored|
+	 ----------------------
+		Each entry is associated with attributes of the compiler in different phases
+		
+		Examples:
+			1.int count; // note we declare that the size is 2 bytes in this case
+			2.char x[] = "NESO ACADEMY";
+
+		NAME - count - x
+		TYPE - int - char
+		SIZE - 2 - 12
+		DIMENSTION - 0 - 1
+		LINE OF DECLERATION -  -
+		LINE OF USAGE -  -
+		ADDRESS -  -
+
+		We should dynamically allocate the size of the symbol table when compiling
+
+	 ----------
+	|Operations|
+	 ----------
+		Non-Block structured Language: (Fortran)
+			Contains single instance of the variable declaration
+			Operations:	
+				Insert()
+				Lookup()
+		Block Structured Language: (C)
+			Variable declaration may happen multiple times
+			Operations:
+				Insert()
+				Lookup()
+				Set()
+				Reset()

@@ -1,0 +1,24 @@
+Language:
+
+operators will be the same 
+	eg. +-*= so on
+
+if statements:
+	if(condition){
+		operations
+	}
+
+variables:
+	var name = whatever
+
+loops:
+	for(condition){
+		operations
+	}
+	\\note that loops will be the same. there will only be for loops but they can do different stuff
+
+functions:
+	func name (parameter names) => var{
+		operations
+		return variable name
+	}
