@@ -34,7 +34,8 @@ impl PartialEq for Token {
 }
 
 //uses tokens and catagorises them
-fn tokenize(input: &str) -> Vec<Token> {
+//input and is_whitespace is giving issues.
+pub fn tokenize(input: Result<&str>) -> Vec<Token> {
     let mut tokens = create_Vec();
     let mut chars = input.chars().peekable(); // peekable is important for being able to see next char without touching it
 
