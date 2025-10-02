@@ -1,6 +1,6 @@
 use std::fs;
 use std::io;
-use crate::File_translate;
+use crate::file_translate;
 
 //get file contents gets what is inside and read_file translates it so tokenize can use it
 fn get_file_contents<'a, E>(file_path: &str, buffer: &'a mut String) -> Result<&'a str, E>
@@ -12,7 +12,7 @@ where
 }
 
 //read_file just reads the file and puts it in a way so that tokenize can use the result
-pub fn read_file<'a>(buffer: &'a mut String) -> Result<&'a str, std::io::Error> {
+pub fn read_file(buffer: &mut String) -> Result<&str, std::io::Error> {
     get_file_contents("myfile.txt", buffer)
 }
 
