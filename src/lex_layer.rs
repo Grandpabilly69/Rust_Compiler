@@ -29,7 +29,7 @@ pub enum LiteralType {
 
 
 
-//uses tokens and catagorises them
+//uses tokens and categorizes them
 //input and is_whitespace is giving issues.
 pub fn tokenize<E>(input: Result<&str, E>) -> Result<Vec<Token>, E> {
     let s = input?; // if Err(E), return it immediately

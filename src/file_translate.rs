@@ -1,6 +1,5 @@
 use std::fs;
 use std::io;
-use crate::file_translate;
 
 //get file contents gets what is inside and read_file translates it so tokenize can use it
 fn get_file_contents<'a, E>(file_path: &str, buffer: &'a mut String) -> Result<&'a str, E>
