@@ -1,7 +1,8 @@
 func hello_world(){
-    var x = "World";
+    var x = 45;
     var y = 3;
-
-    return (x+y);
+    var z = 0;
+//Make sure it uses correct pemdas for equations
+    return (x + y * z);
 
 }
