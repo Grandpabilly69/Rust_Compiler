@@ -177,15 +177,24 @@ impl<'a> Parser<'a> {
             Some(Token::Literal(LiteralType::Boolean(b))) => Expression::Boolean(*b),
             Some(Token::Literal(LiteralType::String(s))) => Expression::String(s.clone()),
             Some(Token::Identifier(s)) => Expression::Ident(s.clone()),
+
+            // 👇 handle grouped expressions like (x + y)
+            Some(Token::Delimiter('(')) => {
+                let expr = self.parse_expression()?; // parse inside the parens
+                self.expect_delim(')')?;             // require closing ')'
+                expr
+            }
+
             other => return Err(format!("Unexpected token in expression: {:?}", other)),
         };
 
+        // handle binary operators
         while let Some(tok) = self.peek() {
             match tok {
                 Token::Operator(op) => {
                     let op_str = op.clone();
-                    self.advance();
-                    let right = self.parse_expression()?; // recursively parse right
+                    self.advance(); // consume operator
+                    let right = self.parse_expression()?; // parse right side
                     left = Expression::BinaryOp {
                         left: Box::new(left),
                         op: op_str,
@@ -199,6 +208,7 @@ impl<'a> Parser<'a> {
 
         Ok(left)
     }
+
 
 }
 //parse expression end
