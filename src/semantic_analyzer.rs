@@ -1,13 +1,15 @@
 use std::collections::HashMap;
 use crate::syntax_analyzer::{Expression, Function, Statement};
 
+//Defining possible types
 #[derive(Debug, Clone, PartialEq)]
 pub enum Type {
     Int,
     Bool,
     Str,
-    Unknown,
+    Unknown,//fallback type if needed
 }
+
 
 pub struct SymbolTable {
     variables: HashMap<String, Type>,
@@ -20,6 +22,7 @@ impl SymbolTable {
         }
     }
 
+    //Inserts vars into table and checks if it already exists in scope
     pub fn insert(&mut self, name: String, ty: Type) -> Result<(), String> {
         if self.variables.contains_key(&name) {
             return Err(format!("Variable '{}' already declared", name));
@@ -28,6 +31,7 @@ impl SymbolTable {
         Ok(())
     }
 
+    //Looks up type of var
     pub fn lookup(&self, name: &str) -> Option<&Type> {
         self.variables.get(name)
     }
@@ -35,14 +39,16 @@ impl SymbolTable {
 
 
 pub struct SemanticAnalyzer {
-    symbols: SymbolTable,
+    symbols: SymbolTable, // keeps track of vars and their types
 }
 
 impl SemanticAnalyzer {
+    //this creates a new analyzer with empty symbol tables
     pub fn new() -> Self {
         Self { symbols: SymbolTable::new() }
     }
 
+    //goes through everything in the function body
     pub fn analyze_function(&mut self, func: &Function) -> Result<(), String> {
         for stmt in &func.body {
             self.analyze_statement(stmt)?;
@@ -50,16 +56,20 @@ impl SemanticAnalyzer {
         Ok(())
     }
 
+    //analyzes single statement
     fn analyze_statement(&mut self, stmt: &Statement) -> Result<(), String> {
         match stmt {
+            //variable declaration
             Statement::VarDecl { name, value } => {
                 let ty = self.analyze_expression(value)?;
                 self.symbols.insert(name.clone(), ty)?;
             }
+            //checks type of return statement
             Statement::Return(expr) => {
                 let _ty = self.analyze_expression(expr)?;
                 // later: check against function return type
             }
+            //type check the expression
             Statement::Expr(expr) => {
                 self.analyze_expression(expr)?;
             }
@@ -67,17 +77,23 @@ impl SemanticAnalyzer {
         Ok(())
     }
 
+    //analyze expression and its return type
     fn analyze_expression(&mut self, expr: &Expression) -> Result<Type, String> {
         match expr {
+
             Expression::Integer(_) => Ok(Type::Int),
             Expression::Boolean(_) => Ok(Type::Bool),
             Expression::String(_) => Ok(Type::Str),
+
+            //Look up var types
             Expression::Ident(name) => {
                 self.symbols
                     .lookup(name)
                     .cloned()
                     .ok_or_else(|| format!("Use of undeclared variable '{}'", name))
             }
+
+            //Binary operations
             Expression::BinaryOp { left, op, right } => {
                 let left_ty = self.analyze_expression(left)?;
                 let right_ty = self.analyze_expression(right)?;
@@ -89,7 +105,9 @@ impl SemanticAnalyzer {
                     ));
                 }
 
+                //checks op
                 match op.as_str() {
+                    //+ works with Int and Str
                     "+" => {
                         if left_ty == Type::Int && right_ty == Type::Int {
                             Ok(Type::Int)
@@ -102,6 +120,7 @@ impl SemanticAnalyzer {
                             ))
                         }
                     }
+                    //Only ints
                     "-" | "*" | "/" => {
                         if left_ty == Type::Int && right_ty == Type::Int {
                             Ok(Type::Int)
@@ -109,6 +128,7 @@ impl SemanticAnalyzer {
                             Err(format!("Operator '{}' not supported for {:?}", op, left_ty))
                         }
                     }
+                    //Comparisons only work with same types
                     "==" | "!=" => {
                         if left_ty == right_ty {
                             Ok(Type::Bool)
@@ -119,6 +139,7 @@ impl SemanticAnalyzer {
                             ))
                         }
                     }
+                    //any other operator is unknown
                     _ => Err(format!("Unknown operator '{}'", op)),
                 }
 
