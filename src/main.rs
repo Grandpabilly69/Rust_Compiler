@@ -12,6 +12,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let tokens = lex_layer::tokenize::<std::io::Error>(Ok(contents))?;
 
+
     let mut parser = syntax_analyzer::Parser::new(&tokens);
     match parser.parse_function() {
         Ok(func) => println!("{:#?}", func),

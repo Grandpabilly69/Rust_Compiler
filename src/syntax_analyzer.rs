@@ -135,7 +135,7 @@ impl<'a> Parser<'a> {
                 Token::Delimiter('}') => break,
                 _ => {
                     let expr = self.parse_expression()?;
-                    self.expect_delim(';')?; // consume the semicolon after a bare expression
+                    self.expect_delim(';')?;
                     stmts.push(Statement::Expr(expr));
                 }
             }
@@ -162,7 +162,7 @@ impl<'a> Parser<'a> {
     fn parse_return(&mut self) -> Result<Statement, String> {
         self.expect_keyword("return")?;
         let value = self.parse_expression()?;  // stops before semicolon
-        self.expect_delim(';')?;               // consumes it
+        self.expect_delim(';')?;               // consumes the ';'
         Ok(Statement::Return(value))
     }
 

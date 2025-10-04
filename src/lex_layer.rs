@@ -70,7 +70,7 @@ pub fn tokenize<E>(input: Result<&str, E>) -> Result<Vec<Token>, E> {
                     }
                 }
                 match ident_str.as_str() {
-                    "func" | "var" | "if" | "else" => tokens.push(Token::Keyword(ident_str)),
+                    "func" | "var" | "if" | "else" | "return" => tokens.push(Token::Keyword(ident_str)),
                     "truth" => tokens.push(Token::Literal(LiteralType::Boolean(true))),
                     "falsy" => tokens.push(Token::Literal(LiteralType::Boolean(false))),
                     _ => tokens.push(Token::Identifier(ident_str)),
