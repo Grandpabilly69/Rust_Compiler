@@ -1,6 +1,6 @@
 func hello_world(){
-    var x = "Hello ";
-    var y = "World!!";
+    var x = "World";
+    var y = "Hello";
 
     return (x+y);
 

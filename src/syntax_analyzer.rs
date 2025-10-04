@@ -172,42 +172,52 @@ impl<'a> Parser<'a> {
 //parse expressions start
 impl<'a> Parser<'a> {
     fn parse_expression(&mut self) -> Result<Expression, String> {
+        // left-hand side
         let mut left = match self.advance() {
             Some(Token::Literal(LiteralType::Integer(n))) => Expression::Integer(*n),
             Some(Token::Literal(LiteralType::Boolean(b))) => Expression::Boolean(*b),
             Some(Token::Literal(LiteralType::String(s))) => Expression::String(s.clone()),
             Some(Token::Identifier(s)) => Expression::Ident(s.clone()),
 
-            // 👇 handle grouped expressions like (x + y)
+            // handle grouped expressions like (x + y)
             Some(Token::Delimiter('(')) => {
-                let expr = self.parse_expression()?; // parse inside the parens
-                self.expect_delim(')')?;             // require closing ')'
+                let expr = self.parse_expression()?;
+                self.expect_delim(')')?;
                 expr
             }
 
             other => return Err(format!("Unexpected token in expression: {:?}", other)),
         };
 
-        // handle binary operators
-        while let Some(tok) = self.peek() {
-            match tok {
-                Token::Operator(op) => {
-                    let op_str = op.clone();
-                    self.advance(); // consume operator
-                    let right = self.parse_expression()?; // parse right side
-                    left = Expression::BinaryOp {
-                        left: Box::new(left),
-                        op: op_str,
-                        right: Box::new(right),
-                    };
+        // left-associative loop
+        while let Some(Token::Operator(op)) = self.peek() {
+            let op_str = op.clone();
+            self.advance(); // consume operator
+
+            // parse *next primary*, not full expression (so it doesn't recurse infinitely)
+            let mut right = match self.advance() {
+                Some(Token::Literal(LiteralType::Integer(n))) => Expression::Integer(*n),
+                Some(Token::Literal(LiteralType::Boolean(b))) => Expression::Boolean(*b),
+                Some(Token::Literal(LiteralType::String(s))) => Expression::String(s.clone()),
+                Some(Token::Identifier(s)) => Expression::Ident(s.clone()),
+                Some(Token::Delimiter('(')) => {
+                    let expr = self.parse_expression()?;
+                    self.expect_delim(')')?;
+                    expr
                 }
-                Token::Delimiter(';') | Token::Delimiter('}') | Token::Delimiter(')') => break,
-                _ => break,
-            }
+                other => return Err(format!("Unexpected token after operator: {:?}", other)),
+            };
+
+            left = Expression::BinaryOp {
+                left: Box::new(left),
+                op: op_str,
+                right: Box::new(right),
+            };
         }
 
         Ok(left)
     }
+
 
 
 }

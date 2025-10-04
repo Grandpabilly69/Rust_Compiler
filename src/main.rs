@@ -1,6 +1,7 @@
 mod lex_layer;
 mod file_translate;
 mod syntax_analyzer;
+mod semantic_analyzer;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     use lex_layer::Token::*;
@@ -16,6 +17,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut parser = syntax_analyzer::Parser::new(&tokens);
     match parser.parse_function() {
         Ok(func) => println!("{:#?}", func),
+        Err(e) => eprintln!("Parse error: {}", e),
+    }
+
+    let mut parser = syntax_analyzer::Parser::new(&tokens);
+    match parser.parse_function() {
+        Ok(func) => {
+            println!("AST: {:#?}", func);
+
+            let mut sema = semantic_analyzer::SemanticAnalyzer::new();
+            match sema.analyze_function(&func) {
+                Ok(_) => println!("Semantic analysis passed ✅"),
+                Err(e) => eprintln!("Semantic error: {}", e),
+            }
+        }
         Err(e) => eprintln!("Parse error: {}", e),
     }
 
