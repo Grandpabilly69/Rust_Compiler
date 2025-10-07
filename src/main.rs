@@ -1,7 +1,10 @@
+use crate::lex_layer::Token;
+
 mod lex_layer;
 mod file_translate;
 mod syntax_analyzer;
 mod semantic_analyzer;
+mod intermediate_code_generator;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     //allows to use enums from lexer
@@ -13,15 +16,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let contents = file_translate::read_file(&mut buffer)?;
     let tokens = lex_layer::tokenize::<std::io::Error>(Ok(contents))?;
 
+    println!("{:?}", tokens);
 
-    //analyzes syntax of code and prepares tokens into parse tree
-    let mut parser = syntax_analyzer::Parser::new(&tokens);
-    match parser.parse_function() {
-        Ok(func) => println!("{:#?}", func),
-        Err(e) => eprintln!("Parse error: {}", e),
-    }
 
-    //prepares tokens into parse tree for semantic analyzer
+    check_sem_syn_ic(tokens);
+
+
+    Ok(())
+}
+
+fn check_sem_syn_ic(tokens: Vec<Token>) {
     let mut parser = syntax_analyzer::Parser::new(&tokens);
     match parser.parse_function() {
         Ok(func) => {
@@ -29,14 +33,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             let mut sema = semantic_analyzer::SemanticAnalyzer::new();
             match sema.analyze_function(&func) {
-                Ok(_) => println!("Semantic analysis passed"),
+                Ok(_) => {
+                    println!("Semantic analysis passed");
+
+                    let mut irgen = intermediate_code_generator::IRGenerator::new();
+                    let ir = irgen.generate_function(&func);
+                    println!("Intermediate Code:\n{:#?}", ir);
+                }
                 Err(e) => eprintln!("Semantic error: {}", e),
             }
         }
         Err(e) => eprintln!("Parse error: {}", e),
     }
-
-    Ok(())
 }
 
 //this is for error checking by showing the tokens
