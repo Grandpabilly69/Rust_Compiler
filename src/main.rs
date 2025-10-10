@@ -5,10 +5,10 @@ mod file_translate;
 mod syntax_analyzer;
 mod semantic_analyzer;
 mod intermediate_code_generator;
+mod optimizer;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     //allows to use enums from lexer
-    use lex_layer::Token::*;
     use lex_layer::LiteralType::*;
 
     //creates tokens from lexer to use for syntax analyzer
@@ -39,6 +39,10 @@ fn check_sem_syn_ic(tokens: Vec<Token>) {
                     let mut irgen = intermediate_code_generator::IRGenerator::new();
                     let ir = irgen.generate_function(&func);
                     println!("Intermediate Code:\n{:#?}", ir);
+
+                    let optimized = optimizer::optimize_ir(ir);
+
+                    println!("Optimized IR:\n{:#?}", optimized);
                 }
                 Err(e) => eprintln!("Semantic error: {}", e),
             }

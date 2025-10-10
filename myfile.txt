@@ -2,7 +2,7 @@ func hello_world(){
     var x = 45;
     var y = "fdgh";
     var z = 1;
-    var c = falsy;
+    var c = nah;
     var d = z+x;
 //Make sure it uses correct pemdas for equations
     return d;
