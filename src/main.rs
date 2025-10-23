@@ -6,6 +6,7 @@ mod syntax_analyzer;
 mod semantic_analyzer;
 mod intermediate_code_generator;
 mod optimizer;
+mod target_code_generator;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     //allows to use enums from lexer
@@ -40,9 +41,18 @@ fn check_sem_syn_ic(tokens: Vec<Token>) {
                     let ir = irgen.generate_function(&func);
                     println!("Intermediate Code:\n{:#?}", ir);
 
-                    let optimized = optimizer::optimize_ir(ir);
+                    let optimized = optimizer::optimize_ir(ir.clone());
 
                     println!("Optimized IR:\n{:#?}", optimized);
+
+                    // after IR generation:
+                    let vm_prog = target_code_generator::lower_ir_to_vm(&ir);
+                    println!("VM instrs: {:#?}", vm_prog.instrs);
+
+                    let mut vm = target_code_generator::VM::new();
+                    let result = vm.run(&vm_prog);
+                    println!("Result: {:?}", result);
+
                 }
                 Err(e) => eprintln!("Semantic error: {}", e),
             }
