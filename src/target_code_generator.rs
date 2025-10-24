@@ -17,6 +17,9 @@ pub enum VMInstr {
     Div,
     Concat, // string concatenation
     Ret,    // return with top-of-stack
+    Jump(usize),             // unconditional jump to instruction index
+    JumpIfFalse(usize),      // jump if top of stack is false
+
 }
 
 // ===== runtime values on the VM stack =====
@@ -34,12 +37,14 @@ pub enum VMValue {
 // you'll add return_ip / caller stacks here.
 #[derive(Debug, Clone)]
 pub struct Frame {
-    pub locals: HashMap<String, VMValue>,
+    pub locals: std::collections::HashMap<String, VMValue>,
 }
 
 impl Frame {
     pub fn new() -> Self {
-        Self { locals: HashMap::new() }
+        Self {
+            locals: std::collections::HashMap::new(),
+        }
     }
 }
 
@@ -53,14 +58,18 @@ pub struct VMProgram {
 pub struct VM {
     stack: Vec<VMValue>,     // evaluation stack
     frames: Vec<Frame>,      // call stack (frame 0 is global)
+    pub ip: usize,             // instruction pointer (index in instrs)
+
 }
+
 
 impl VM {
     /// Create a new VM with an empty global frame
     pub fn new() -> Self {
         Self {
             stack: Vec::new(),
-            frames: vec![Frame::new()], // start with a global frame
+            frames: vec![Frame::new()],
+            ip: 0, // start at first instruction
         }
     }
 
@@ -89,92 +98,67 @@ impl VM {
     /// Execute a VMProgram and return an optional VMValue from the first Ret.
     /// This is a simple interpreter loop. It returns the top-of-stack value
     /// when it sees a `Ret` instruction.
-    pub fn run(&mut self, program: &VMProgram) -> Option<VMValue> {
-        for instr in &program.instrs {
-            match instr {
-                VMInstr::PushInt(n) => self.push(VMValue::Int(*n)),
-                VMInstr::PushBool(b) => self.push(VMValue::Bool(*b)),
-                VMInstr::PushStr(s) => self.push(VMValue::Str(s.clone())),
+    pub fn run(&mut self, prog: &VMProgram) -> Option<VMValue> {
+        self.ip = 0;
+        while self.ip < prog.instrs.len() {
+            let instr = &prog.instrs[self.ip];
+            self.ip += 1; // move to next instruction by default
 
-                VMInstr::Load(name) => {
-                    match self.get_var(name) {
-                        Some(v) => self.push(v),
-                        None => panic!("Undefined variable '{}' on Load", name),
+            match instr {
+                VMInstr::PushInt(n) => self.stack.push(VMValue::Int(*n)),
+                VMInstr::PushBool(b) => self.stack.push(VMValue::Bool(*b)),
+                VMInstr::PushStr(s) => self.stack.push(VMValue::Str(s.clone())),
+
+                VMInstr::Add => {
+                    let b = self.stack.pop().expect("Stack underflow");
+                    let a = self.stack.pop().expect("Stack underflow");
+                    if let (VMValue::Int(a), VMValue::Int(b)) = (a, b) {
+                        self.stack.push(VMValue::Int(a + b));
+                    } else {
+                        panic!("Add expects two integers");
                     }
                 }
 
                 VMInstr::Store(name) => {
-                    let v = self.pop();
-                    self.set_var(name, v);
+                    let val = self.stack.pop().expect("Stack underflow on Store");
+                    self.set_var(name, val);
                 }
 
-                // arithmetic + concat
-                VMInstr::Add => {
-                    let r = self.pop();
-                    let l = self.pop();
-                    match (l, r) {
-                        (VMValue::Int(a), VMValue::Int(b)) => self.push(VMValue::Int(a + b)),
-                        (VMValue::Str(a), VMValue::Str(b)) => {
-                            // String + String -> String
-                            self.push(VMValue::Str(a + &b));
-                        }
-                        // optionally allow mixing string+int via format!:
-                        (VMValue::Str(a), VMValue::Int(b)) => {
-                            self.push(VMValue::Str(format!("{}{}", a, b)));
-                        }
-                        (VMValue::Int(a), VMValue::Str(b)) => {
-                            self.push(VMValue::Str(format!("{}{}", a, b)));
-                        }
-                        _ => panic!("Type error in Add"),
+                VMInstr::Load(name) => {
+                    if let Some(val) = self.get_var(name) {
+                        self.stack.push(val);
+                    } else {
+                        panic!("Undefined variable: {}", name);
                     }
                 }
 
-                VMInstr::Sub => {
-                    let r = self.pop();
-                    let l = self.pop();
-                    match (l, r) {
-                        (VMValue::Int(a), VMValue::Int(b)) => self.push(VMValue::Int(a - b)),
-                        _ => panic!("Type error in Sub"),
-                    }
-                }
-
-                VMInstr::Mul => {
-                    let r = self.pop();
-                    let l = self.pop();
-                    match (l, r) {
-                        (VMValue::Int(a), VMValue::Int(b)) => self.push(VMValue::Int(a * b)),
-                        _ => panic!("Type error in Mul"),
-                    }
-                }
-
-                VMInstr::Div => {
-                    let r = self.pop();
-                    let l = self.pop();
-                    match (l, r) {
-                        (VMValue::Int(_), VMValue::Int(0)) => panic!("Division by zero"),
-                        (VMValue::Int(a), VMValue::Int(b)) => self.push(VMValue::Int(a / b)),
-                        _ => panic!("Type error in Div"),
-                    }
-                }
-
-                VMInstr::Concat => {
-                    let r = self.pop();
-                    let l = self.pop();
-                    match (l, r) {
-                        (VMValue::Str(a), VMValue::Str(b)) => self.push(VMValue::Str(a + &b)),
-                        _ => panic!("Type error in Concat"),
-                    }
-                }
-
-                // Return: pop top-of-stack and return it as program result
                 VMInstr::Ret => {
-                    return Some(self.pop());
+                    return self.stack.pop();
                 }
+
+                // optional: add these when you do control flow
+                VMInstr::Jump(target) => {
+                    self.ip = *target;
+                    continue;
+                }
+                VMInstr::JumpIfFalse(target) => {
+                    if let Some(VMValue::Bool(cond)) = self.stack.pop() {
+                        if !cond {
+                            self.ip = *target;
+                            continue;
+                        }
+                    } else {
+                        panic!("Expected bool on JumpIfFalse");
+                    }
+                }
+
+                _ => {}
             }
         }
 
         None
     }
+
 }
 
 // ===== Lowering from IR to VMProgram (simple deterministic lowering) =====
